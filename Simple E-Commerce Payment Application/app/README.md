@@ -1,12 +1,12 @@
-Payment App Complete Deployment
+**Payment App Complete Deployment**
 
     E-Commerce Payment Application with NGINX Load Balancer and Apache Multi-Backend Setup.
 
-Quick Start
+**Quick Start**
 
     bashsudo bash deploy.sh
 
-Architecture
+**Architecture**
 
     User Browser
         ↓
@@ -22,14 +22,14 @@ Architecture
     Backend 1: http://localhost:8080/
     Backend 2: http://localhost:8081/
 
-Database
+**Database**
 
     Host: localhost
     Database: payment_db
     User: payment_user
     Password: payment_secure_2024
 
-Monitoring
+**Monitoring**
 
     bashtail -f /var/log/nginx/loadbalancer_access.log
     tail -f /var/log/apache2/payment-8080_access.log
