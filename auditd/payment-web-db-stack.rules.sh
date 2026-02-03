@@ -2,8 +2,6 @@
 # Web & Database Stack Monitoring Rules
 # =====================================
 
-# Remove existing rules
--D
 
 # Buffer and failure settings
 -b 8192
@@ -11,8 +9,8 @@
 
 #========== WEB APPLICATION FILES ==========
 
--w  /var/www/payment/ -p rwa -k payment_application_files
--w /var/www/payment/logs -p rwa -k payment_app_logs
+-w  /var/www/payment/ -p wa -k payment_application_files
+-w /var/www/payment/logs -p wa -k payment_app_logs
 -w /var/www/payment/index.php -p rwa -k payment_app_main_file
 
 # ========== APACHE RULES ==========
@@ -42,7 +40,7 @@
 -w /etc/apache2/conf-enabled/ -p wa -k apache_conf_enabled
 
 # Apache process
--a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/apache2 -k apache_process
+-a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/apache2 -F auid>=1000 -F auid!=-1 -k apache_process
 
 
 # ========== MYSQL DATABASE ==========
@@ -56,10 +54,10 @@
 -w /var/log/mysql/ -p wa -k mysql_logs_modified
 
 # MySQL data directory monitoring
--w /var/lib/mysql/payment_db/ -p wa -k mysql_payment_db_changes
+-w /var/lib/mysql/payment_db/ -p a -k mysql_payment_db_changes
 
 # MYSQL process
--a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/mysqld -k mysql_process
+-a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/mysqld -F auid>=1000 -F auid!=-1 -k mysql_process
 
 
 # ========== NGINX LOAD BALANCER ==========
@@ -76,7 +74,7 @@
 -w /etc/nginx/ -p wa -k nginx_main_config
 
 # NGINX process
--a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/nginx -k nginx_process
+-a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/nginx -F auid>=1000 -F auid!=-1 -k nginx_process
 
 
 # Systemd service files
