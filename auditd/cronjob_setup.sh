@@ -1,16 +1,22 @@
 #!/bin/bash
 
-echo -e "════════════════════════════════════════════$"
+echo -e "════════════════════════════════════════════"
 echo -e "PHASE 5: CRON JOB SETUP"
 echo -e "════════════════════════════════════════════"
 echo ""
 
-# Daily report at 6 AM
 echo -e "[*] Setting up cron jobs..."
 
-sudo crontab -u root -l 2>/dev/null | grep -v "loadbalancer" | sudo crontab -u root - 2>/dev/null || true
+SCRIPT="/usr/local/bin/payment-daily-audit-report.sh"
 
-(sudo crontab -u root -l 2>/dev/null; echo "0 6 * * * /usr/local/bin/loadbalancer-daily-audit-report.sh") | sudo crontab -u root -
+# Ensure script is executable
+chmod +x "$SCRIPT"
 
-echo -e "[+] Cron jobs configured"
+# Remove old entry safely
+sudo crontab -u root -l 2>/dev/null | grep -v "$SCRIPT" | sudo crontab -u root - 2>/dev/null || true
+
+# Add new cron job with logging
+(sudo crontab -u root -l 2>/dev/null; echo "0 6 * * * $SCRIPT >> /var/log/payment-audit-cron.log 2>&1") | sudo crontab -u root -
+
+echo -e "[+] Cron job configured successfully"
 echo ""
