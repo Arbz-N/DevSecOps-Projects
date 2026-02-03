@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #============================================================================
-# This is main script that will trigger the all the scripts related to auditd
+# This is main script that will trigger the all the scripts related to Auditd-Based_Security_Monitoring_for_E-Commerce_Payment_Stack
 #==============================================================================
 
 set -e
@@ -35,7 +35,7 @@ echo ""
 echo -e "${YELLOW}[*] Installing auditd...${NC}"
 apt-get update -y
 if ! command -v auditctl &>/dev/null; then
-   apt-get install -y auditd audispd-plugins
+   apt-get install -y Auditd-Based_Security_Monitoring_for_E-Commerce_Payment_Stack audispd-plugins
 fi
 
 
@@ -75,9 +75,9 @@ echo -e "${YELLOW}[*] Loading audit rules...${NC}"
 # Load new rules
 augenrules --load
 
-# Make sure auditd starts on boot
-systemctl enable auditd
-systemctl restart auditd
+# Make sure Auditd-Based_Security_Monitoring_for_E-Commerce_Payment_Stack starts on boot
+systemctl enable Auditd-Based_Security_Monitoring_for_E-Commerce_Payment_Stack
+systemctl restart Auditd-Based_Security_Monitoring_for_E-Commerce_Payment_Stack
 
 
 echo -e "${GREEN}[+] Audit rules loaded and auditd started${NC}"
@@ -127,7 +127,7 @@ echo -e "${BLUE}═════════════════════�
 echo ""
 
 echo -e "${YELLOW}Auditd Service Status:${NC}"
-sudo systemctl status auditd --no-pager | head -5
+sudo systemctl status Auditd-Based_Security_Monitoring_for_E-Commerce_Payment_Stack --no-pager | head -5
 
 echo ""
 echo -e "${YELLOW}Audit Rules Loaded:${NC}"
@@ -136,13 +136,17 @@ echo "Total Rules: $RULES_COUNT"
 
 echo ""
 echo -e "${YELLOW}Dashboard Verification:${NC}"
-DASHBOARD_COUNT=$(payment-audit-dashboard.sh --test | wc -l )
+DASHBOARD_COUNT=$(payment-audit-dashboard.sh --test | wc -l)
 echo "Total Rules: $DASHBOARD_COUNT"
 
 echo ""
 echo -e "${YELLOW}Cron Check:${NC}"
 CRON_COUNT=$(sudo crontab -l -u root | grep payment-daily | wc -l )
-echo "Total Rules: $CRON_COUNT"
+if [ "$CRON_COUNT" -eq 0 ]; then
+    echo -e "${RED}[!] Cron job not added correctly${NC}"
+else
+  echo "Total Rules: $CRON_COUNT"
+fi
 
 echo ""
 echo -e "${YELLOW}Rule Categories:${NC}"
