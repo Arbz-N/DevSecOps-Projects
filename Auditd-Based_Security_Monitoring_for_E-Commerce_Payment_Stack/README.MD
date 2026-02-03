@@ -54,11 +54,11 @@ Auditd acts as the **primary audit daemon** on Linux systems, capturing system c
    git clone <repository-url>
    cd DevSecOps-Projects/auditd
 
-Run the deployment script as root:
+**Run the deployment script as root:**
 
     sudo ./Deploy.sh
 
-The script will:
+**The script will:**
 
     Install auditd and required plugins if missing
     Deploy the audit rules to /etc/audit/rules.d/
@@ -67,15 +67,15 @@ The script will:
     Set up daily cron jobs for audit reports
     Verify service status and rule deployment
 
-Access the dashboard:
+**Access the dashboard:**
 
     sudo /usr/local/bin/payment-audit-dashboard.sh
 
-View daily audit reports:
+**View daily audit reports:**
 
     Reports are generated in /var/log/payment_audit_reports/ with timestamps.
 
-Auditd Overview
+**Auditd Overview**
 
     Auditd is the userspace component to the Linux Auditing System. It provides:
     Real-time monitoring of system calls and kernel events.
@@ -83,7 +83,7 @@ Auditd Overview
     Customizable rules to track changes in files, processes, users, and network access.
     Integration with dashboards and automated reporting, enabling continuous security monitoring for production systems.
 
-Verification
+**Verification**
 
     After deployment, you can verify:
 
