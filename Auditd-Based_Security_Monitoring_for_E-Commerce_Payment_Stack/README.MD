@@ -13,6 +13,9 @@ The setup focuses on monitoring:
 The solution automates **rule deployment, monitoring scripts, and daily audit reports**, enabling DevSecOps teams to maintain visibility and security compliance across the infrastructure.
 Auditd acts as the **primary audit daemon** on Linux systems, capturing system calls, configuration changes, process events, and user actions for real-time auditing and historical reporting.
 
+> **Note:** 
+    A simple PHP-based e-commerce payment application is included for **demo purposes only** to showcase Auditd monitoring in action.
+    You can explore the demo here: [Simple E-Commerce Payment Application](./Simple_E-Commerce_Payment_Application)
 ---
     Audit-Based_Security_Monitoring_for_E-Commerce_Payment_Stack/
     ├── README.md
