@@ -15,7 +15,7 @@ Auditd acts as the **primary audit daemon** on Linux systems, capturing system c
 
 > **Note:** 
     A simple PHP-based e-commerce payment application is included for **demo purposes only** to showcase Auditd monitoring in action.
-    You can explore the demo here: [Simple E-Commerce Payment Application](/DevSecOps-Projects/Simple_E-Commerce_Payment_Application)
+    You can explore the demo here: [Simple E-Commerce Payment Application](https://github.com/Arbz-N/DevSecOps-Projects/blob/8cd528ada79256af1022aa1f9f4b92a2d2c4aa04/Simple_E-Commerce_Payment_Application)
 ---
     Audit-Based_Security_Monitoring_for_E-Commerce_Payment_Stack/
     ├── README.md
