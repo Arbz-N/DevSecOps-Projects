@@ -14,13 +14,10 @@ echo "NGINX LOAD BALANCER MONITORING"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Service Status:"
-sudo systemctl is-active nginx && echo "Running" || echo "Stopped"
+if systemctl is-active --quiet nginx; then echo "Running"; else echo "Stopped"; fi
 echo ""
 echo "Configuration Changes (Last 24h):"
-
-echo ""
-echo "Configuration Changes (Last 24h):"
-NGINX_CONFIG=$(sudo ausearch -k nginx_config_changes -i --start today 2>/dev/null | wc -l)
+NGINX_CONFIG=$(sudo ausearch -k nginx_main_config -i --start today 2>/dev/null | wc -l)
 echo "   Events: $NGINX_CONFIG"
 
 echo ""
@@ -36,7 +33,7 @@ echo "APACHE BACKEND 1 (Port 8080) MONITORING"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Service Status:"
-sudo netstat -tlnp 2>/dev/null | grep :8080 | grep -q apache2 && echo "Running" || echo "Stopped"
+sudo ss -tlnp 2>/dev/null | grep :8080 | grep -q apache2 && echo "Running" || echo "Stopped"
 
 echo ""
 echo "Configuration Changes (Last 24h):"
@@ -56,7 +53,7 @@ echo "APACHE BACKEND 2 (Port 8081) MONITORING"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Service Status:"
-sudo netstat -tlnp 2>/dev/null | grep :8081 | grep -q apache2 && echo "Running" || echo "Stopped"
+sudo ss -tlnp 2>/dev/null | grep :8081 | grep -q apache2 && echo "Running" || echo "Stopped"
 
 echo ""
 echo "Configuration Changes (Last 24h):"
@@ -76,17 +73,16 @@ echo "MYSQL DATABASE MONITORING"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Service Status:"
-sudo systemctl is-active mysql && echo "Running" || echo "Stopped"
-
+if systemctl is-active --quiet mysql; then echo "Running"; else echo "Stopped"; fi
 echo ""
 echo "Configuration Changes (Last 24h):"
 MYSQL_CONFIG=$(sudo ausearch -k mysql_config_changes -i --start today 2>/dev/null | wc -l)
 echo "   Events: $MYSQL_CONFIG"
 
 echo ""
-echo "Database Modifications (Last 24h):"
-MYSQL_DATA=$(sudo ausearch -k mysql_logs_modified -i --start today 2>/dev/null | wc -l)
-echo "   Events: $MYSQL_DATA"
+echo "Database logs Modifications (Last 24h):"
+MYSQL_LOGS_DATA=$(sudo ausearch -k mysql_logs_modified -i --start today 2>/dev/null | wc -l)
+echo "   Events: $MYSQL_LOGS_DATA"
 
 echo ""
 echo "Payment Database Access (Last 24h):"
@@ -117,7 +113,7 @@ echo "SUMMARY STATISTICS"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-TOTAL_EVENTS=$(grep -c "type=" /var/log/audit/audit.log 2>/dev/null || echo "0")
+TOTAL_EVENTS=$(ausearch --start today 2>/dev/null | grep -c "type=")
 echo "Total Audit Events (All Time): $TOTAL_EVENTS"
 
 echo ""
@@ -125,7 +121,7 @@ echo "   Services Activity Summary (Last 24h):"
 echo "   NGINX Events: $((NGINX_CONFIG + NGINX_PROC))"
 echo "   Apache 1 Events: $((APACHE8080_CONFIG + APACHE8080_LOGS))"
 echo "   Apache 2 Events: $((APACHE8081_CONFIG + APACHE8081_LOGS))"
-echo "   MySQL Events: $((MYSQL_CONFIG + MYSQL_DATA + MYSQL_PAYMENT))"
+echo "   MySQL Events: $((MYSQL_CONFIG + MYSQL_LOGS_DATA + MYSQL_PAYMENT))"
 echo "   App Events: $((APP_ACCESS + APP_MAIN))"
 
 echo ""
