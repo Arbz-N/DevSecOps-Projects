@@ -11,9 +11,9 @@
 
 #========== WEB APPLICATION FILES ==========
 
--w  /var/www/payment/ -p rwa -k project_files
--w /var/www/payment/logs -p rwa -k project_logs
--w /var/www/payment/index.php -p rwa -k project_php_file
+-w  /var/www/payment/ -p rwa -k payment_application_files
+-w /var/www/payment/logs -p rwa -k payment_app_logs
+-w /var/www/payment/index.php -p rwa -k payment_app_main_file
 
 # ========== APACHE RULES ==========
 
@@ -73,7 +73,7 @@
 -w /var/log/nginx/loadbalancer_error.log -p wa -k nginx_error_logs
 
 # NGINX configuration directory
--w /etc/nginx/nginx.conf -p wa -k nginx_main_config
+-w /etc/nginx/ -p wa -k nginx_main_config
 
 # NGINX process
 -a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/nginx -k nginx_process
