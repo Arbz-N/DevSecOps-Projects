@@ -1,10 +1,25 @@
-**Payment App Complete Deployment**
+**Simple E-Commerce Payment Application**
 
-    E-Commerce Payment Application with NGINX Load Balancer and Apache Multi-Backend Setup.
+    A production-ready payment processing system with NGINX load balancing and multi-backend Apache servers.
+
+Project Structure
+
+    Simple_E-Commerce_Payment_Application/
+    ├── README.md                    # Documentation
+    ├── Deploy.sh                    # Main deployment script
+    ├── app/
+    │   ├── index.php               # PHP application
+    │   └── Deploy.sh               # App deployment handler
+    └── modules/
+        ├── 01-system-setup.sh      # Install packages
+        ├── 02-app-deploy.sh        # Deploy app files
+        ├── 03-mysql-setup.sh       # Setup database
+        ├── 04-apache-config.sh     # Configure Apache
+        └── 05-nginx-config.sh      # Configure NGINX
 
 **Quick Start**
 
-    bashsudo bash deploy.sh
+    sudo bash deploy.sh
 
 **Architecture**
 
@@ -21,6 +36,10 @@
     Load Balanced: http://localhost/
     Backend 1: http://localhost:8080/
     Backend 2: http://localhost:8081/
+
+    Round-robin load balancing across 2 backends
+    Shared MySQL database for data consistency
+    High availability - if one backend fails, other serves requests
 
 **Database**
 
