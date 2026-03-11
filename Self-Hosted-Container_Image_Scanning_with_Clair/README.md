@@ -13,3 +13,26 @@
     clairctl v4 CLI used for scanning 
 
 
+Project Structure
+
+    ClairScan/
+    │
+    ├── clair-lab/
+    │   └── Dockerfile               # BusyBox test image
+    │
+    ├── clair-setup/
+    │   ├── docker-compose.yaml      # Clair + PostgreSQL services
+    │   └── config/
+    │       └── config.yaml          # Clair v4 configuration (required)
+    │
+    └── README.md                    # Project documentation
+
+
+Prerequisites
+
+Requirement                    Detail
+Docker                         Installed (docker --version)
+Docker Compose                 Installed (docker-compose --version)
+
+
+Architecture
