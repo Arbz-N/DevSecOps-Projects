@@ -62,7 +62,7 @@
 
 # ========== NGINX LOAD BALANCER ==========
 
-# NGINX configuration files
+# NGINX configuration terraform_files
 -w /etc/nginx/sites-available/loadbalancer -p wa -k nginx_lb_config
 -w /etc/nginx/sites-enabled/loadbalancer -p wa -k nginx_lb_enabled
 
@@ -77,7 +77,7 @@
 -a exit,always -F arch=b64 -S execve -F exe=/usr/sbin/nginx -F auid>=1000 -F auid!=-1 -k nginx_process
 
 
-# Systemd service files
+# Systemd service terraform_files
 -w /etc/systemd/system/ -p wa -k systemd_changes
 -w /lib/systemd/system/nginx.service -p wa -k nginx_service
 -w /lib/systemd/system/apache2.service -p wa -k apache_service
