@@ -1,0 +1,18 @@
+http_listen_addr: "0.0.0.0:6060"
+introspection_addr: "0.0.0.0:6061"
+log_level: "info"
+
+indexer:
+  connstring: "host=postgres port=5432 user=clair dbname=clair password=clairpassword sslmode=disable"
+  scanlock_retry: 10
+  layer_scan_concurrency: 5
+  migrations: true
+
+matcher:
+  connstring: "host=postgres port=5432 user=clair dbname=clair password=clairpassword sslmode=disable"
+  max_conn_pool: 100
+  migrations: true
+
+notifier:
+  connstring: "host=postgres port=5432 user=clair dbname=clair password=clairpassword sslmode=disable"
+  migrations: true
