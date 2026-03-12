@@ -39,3 +39,35 @@ Prerequisites
 
 
 Architecture
+
+            Developer
+                  │
+                  │  docker build
+                  ▼
+              ┌──────────────────────────────────────────────────┐
+              │  trivy image (local)                             │
+              │  ├── OS packages    → CVE database match         │
+              │  ├── App deps       → pip/npm/gem/maven          │
+              │  ├── Secrets        → AWS keys, passwords        │
+              │  └── Misconfigs     → Dockerfile best practices  │
+              └──────────────────────────────────────────────────┘
+                  │
+                  │  docker push
+                  ▼
+              Amazon ECR (scanOnPush=true)
+                  │
+                  │  trivy image ECR_URI:tag (direct ECR scan)
+                  ▼
+              Trivy Report
+              ┌────────────────────────────────┐
+              │  CRITICAL: 0                   │
+              │  HIGH:     0                   │
+              │  MEDIUM:   1    (DS-0001)      │
+              │  LOW:      1   (DS-0026)       │
+              └────────────────────────────────┘
+                  │
+                  ▼
+              CI/CD Pipeline
+              CRITICAL found? → FAIL  (deploy blocked)
+              No CRITICAL?    → Push → Deploy 
+
