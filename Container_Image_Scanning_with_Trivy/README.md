@@ -217,7 +217,7 @@
     # → Remove immediately and rotate the key 
 
 
-Step 8 — CI/CD Security Gate
+## Step 8 — CI/CD Security Gate:
 
     The scan-pipeline-example.yaml file demonstrates a GitHub Actions pipeline that blocks deployment if any CRITICAL vulnerability is found.
     Key step in the pipeline:
@@ -231,7 +231,7 @@ Step 8 — CI/CD Security Gate
         # CRITICAL found → exit code 1 → pipeline FAIL → deploy bl
 
 
-Cleanup
+## Cleanup:
 
     bashaws ecr batch-delete-image \
       --repository-name $ECR_REPO \
@@ -247,6 +247,6 @@ Cleanup
 
     cd ~ && rm -rf trivy-lab/
 
-License
+## License:
 
     This project is licensed under the MIT License.
