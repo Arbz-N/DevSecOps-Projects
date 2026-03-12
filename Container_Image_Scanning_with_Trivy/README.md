@@ -71,3 +71,147 @@ Architecture
               CRITICAL found? → FAIL  (deploy blocked)
               No CRITICAL?    → Push → Deploy 
 
+
+Setup — Variables
+
+    export AWS_REGION=us-east-1
+    export ACCOUNT_ID=$(aws sts get-caller-identity \
+      --query Account --output text)
+    export ECR_REPO=trivy-lab-app
+    export IMAGE_TAG=v1.0
+    
+    echo "Account: $ACCOUNT_ID"
+    echo "Region : $AWS_REGION"
+
+
+Step 1 — Install Trivy
+
+    sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+    
+    wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | \
+      sudo apt-key add -
+    
+    echo "deb https://aquasecurity.github.io/trivy-repo/deb \
+      $(lsb_release -sc) main" | \
+      sudo tee /etc/apt/sources.list.d/trivy.list
+    
+    sudo apt-get update && sudo apt-get install -y trivy
+    
+    trivy --version
+    # Version: 0.x.x 
+
+Step 2 — Build Test Images
+
+    mkdir -p trivy-lab && cd trivy-lab
+    
+    # Build both images
+    docker build -t $ECR_REPO:$IMAGE_TAG .
+    docker build -f Dockerfile.fixed -t $ECR_REPO:v1.1-fixed .
+    
+    docker images | grep $ECR_REPO
+    # trivy-lab-app   v1.0       
+    # trivy-lab-app   v1.1-fixed 
+
+Step 3 — Create ECR Repository and Push
+
+    aws ecr create-repository \
+      --repository-name $ECR_REPO \
+      --region $AWS_REGION \
+      --image-scanning-configuration scanOnPush=true
+    
+    export ECR_URI=$(aws ecr describe-repositories \
+      --repository-names $ECR_REPO \
+      --region $AWS_REGION \
+      --query 'repositories[0].repositoryUri' \
+      --output text)
+    
+    # Login and push
+    aws ecr get-login-password --region $AWS_REGION | \
+      docker login --username AWS --password-stdin \
+      $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    
+    docker tag $ECR_REPO:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
+    docker push $ECR_URI:$IMAGE_TAG
+
+Step 4 — Local Image Scan
+ 
+    # Full scan
+    trivy image $ECR_REPO:$IMAGE_TAG
+    
+    # CRITICAL and HIGH only
+    trivy image \
+      --severity CRITICAL,HIGH \
+      $ECR_REPO:$IMAGE_TAG
+    
+    # Save JSON report
+    trivy image \
+      --format json \
+      --output trivy-report.json \
+      $ECR_REPO:$IMAGE_TAG
+
+
+Step 5 — ECR Direct Scan
+
+    # Scan ECR image directly — no local pull needed
+    trivy image $ECR_URI:$IMAGE_TAG
+    
+    trivy image \
+      --severity CRITICAL,HIGH \
+      $ECR_URI:$IMAGE_TAG
+
+Step 6 — Dockerfile Misconfiguration Scan
+
+    # Scan original (misconfigured)
+    trivy config Dockerfile
+    
+    # Scan fixed version
+    trivy config Dockerfile.fixed
+
+Actual Scan Results
+    
+    Report Summary
+    ┌──────────────────┬────────────┬───────────────────┐
+    │      Target      │    Type    │ Misconfigurations │
+    ├──────────────────┼────────────┼───────────────────┤
+    │ Dockerfile       │ dockerfile │         2         │  ← issues 
+    ├──────────────────┼────────────┼───────────────────┤
+    │ Dockerfile.fixed │ dockerfile │         0         │  ← clean 
+    └──────────────────┴────────────┴───────────────────┘
+
+    Finding 1 — DS-0001 (MEDIUM): latest tag used
+
+    Cause:
+      "latest" tag is unpredictable.
+      Today's build → one image
+      Tomorrow's build → different image (if base updated)
+      No reproducible builds 
+    
+    Fix:
+      FROM busybox:1.36.1   ← specific version 
+
+
+    Cause:
+      Kubernetes and Docker don't know if the container is healthy.
+      App crashes → container shows "Running" 
+      No automatic restart triggered.
+    
+    Fix:
+      HEALTHCHECK --interval=30s --timeout=3s \
+        CMD sh -c "test -f /myapp/sample.txt" || exit 1 
+
+Step 7 — Secrets Scan
+
+    # Scan image for hard-coded secrets
+    trivy image \
+      --scanners secret \
+      $ECR_REPO:$IMAGE_TAG
+    
+    # Scan local filesystem
+    trivy fs \
+      --scanners secret \
+      .
+    
+    # If a secret is found:
+    # SECRET: AWS Access Key ID found
+    # File: .env line 3
+    # → Remove immediately and rotate the key 
