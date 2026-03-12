@@ -1,0 +1,30 @@
+name: Container Security Scan
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Image
+        run: docker build -t myapp:${{ github.sha }} .
+
+      - name: Install Trivy
+        run: |
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb focal main" >> /etc/apt/sources.list.d/trivy.list
+          apt-get update && apt-get install -y trivy
+
+      - name: Scan — FAIL if CRITICAL found
+        run: |
+          trivy image \
+            --severity CRITICAL \
+            --exit-code 1 \
+            myapp:${{ github.sha }}
+
+      - name: Push to ECR
+        run: docker push ${{ env.ECR_URI }}:${{ github.sha }}
