@@ -1,0 +1,15 @@
+FROM busybox:1.36.1
+
+RUN mkdir -p /myapp
+WORKDIR /myapp
+RUN echo "Hello from Trivy lab - fixed." > sample.txt
+
+RUN adduser -D -u 1000 appuser && \
+    chown -R appuser:appuser /myapp
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD sh -c "test -f /myapp/sample.txt" || exit 1
+
+CMD ["sh"]
+
