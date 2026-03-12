@@ -1,6 +1,6 @@
 # Container Image Scanning with Trivy
 
-Overview
+## Overview:
 
     TrivyScan is a hands-on project that demonstrates fast, comprehensive container image vulnerability scanning using Trivy by Aqua Security. 
     It covers OS package CVE scanning, Dockerfile misconfiguration detection, secrets scanning.
@@ -17,7 +17,7 @@ Overview
     Real scan output documented with root cause and fix for each finding
 
 
-Project Structure
+## Project Structure:
 
         Container_Image_Scanning_with_Trivy/
         │
@@ -28,7 +28,7 @@ Project Structure
         │
         └── README.md                   # Project documentation
 
-Prerequisites
+## Prerequisites:
 
     Requirement               Detail
 
@@ -38,7 +38,7 @@ Prerequisites
     Ubuntu/Debian             For Trivy apt install
 
 
-Architecture
+## Architecture:
 
             Developer
                   │
@@ -72,7 +72,7 @@ Architecture
               No CRITICAL?    → Push → Deploy 
 
 
-Setup — Variables
+## Setup — Variables:
 
     export AWS_REGION=us-east-1
     export ACCOUNT_ID=$(aws sts get-caller-identity \
@@ -84,7 +84,7 @@ Setup — Variables
     echo "Region : $AWS_REGION"
 
 
-Step 1 — Install Trivy
+## Step 1 — Install Trivy:
 
     sudo apt-get install -y wget apt-transport-https gnupg lsb-release
     
@@ -100,7 +100,7 @@ Step 1 — Install Trivy
     trivy --version
     # Version: 0.x.x 
 
-Step 2 — Build Test Images
+## Step 2 — Build Test Images:
 
     mkdir -p trivy-lab && cd trivy-lab
     
@@ -112,7 +112,7 @@ Step 2 — Build Test Images
     # trivy-lab-app   v1.0       
     # trivy-lab-app   v1.1-fixed 
 
-Step 3 — Create ECR Repository and Push
+## Step 3 — Create ECR Repository and Push:
 
     aws ecr create-repository \
       --repository-name $ECR_REPO \
@@ -133,7 +133,7 @@ Step 3 — Create ECR Repository and Push
     docker tag $ECR_REPO:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
     docker push $ECR_URI:$IMAGE_TAG
 
-Step 4 — Local Image Scan
+## Step 4 — Local Image Scan:
  
     # Full scan
     trivy image $ECR_REPO:$IMAGE_TAG
@@ -150,7 +150,7 @@ Step 4 — Local Image Scan
       $ECR_REPO:$IMAGE_TAG
 
 
-Step 5 — ECR Direct Scan
+## Step 5 — ECR Direct Scan:
 
     # Scan ECR image directly — no local pull needed
     trivy image $ECR_URI:$IMAGE_TAG
@@ -159,7 +159,7 @@ Step 5 — ECR Direct Scan
       --severity CRITICAL,HIGH \
       $ECR_URI:$IMAGE_TAG
 
-Step 6 — Dockerfile Misconfiguration Scan
+## Step 6 — Dockerfile Misconfiguration Scan:
 
     # Scan original (misconfigured)
     trivy config Dockerfile
@@ -167,7 +167,7 @@ Step 6 — Dockerfile Misconfiguration Scan
     # Scan fixed version
     trivy config Dockerfile.fixed
 
-Actual Scan Results
+## Actual Scan Results:
     
     Report Summary
     ┌──────────────────┬────────────┬───────────────────┐
@@ -199,7 +199,7 @@ Actual Scan Results
       HEALTHCHECK --interval=30s --timeout=3s \
         CMD sh -c "test -f /myapp/sample.txt" || exit 1 
 
-Step 7 — Secrets Scan
+## Step 7 — Secrets Scan:
 
     # Scan image for hard-coded secrets
     trivy image \
