@@ -215,3 +215,38 @@ Step 7 — Secrets Scan
     # SECRET: AWS Access Key ID found
     # File: .env line 3
     # → Remove immediately and rotate the key 
+
+
+Step 8 — CI/CD Security Gate
+
+    The scan-pipeline-example.yaml file demonstrates a GitHub Actions pipeline that blocks deployment if any CRITICAL vulnerability is found.
+    Key step in the pipeline:
+
+    - name: Scan — FAIL if CRITICAL found
+      run: |
+        trivy image \
+          --severity CRITICAL \
+          --exit-code 1 \
+          myapp:${{ github.sha }}
+        # CRITICAL found → exit code 1 → pipeline FAIL → deploy bl
+
+
+Cleanup
+
+    bashaws ecr batch-delete-image \
+      --repository-name $ECR_REPO \
+      --image-ids imageTag=$IMAGE_TAG imageTag=v1.1-fixed \
+      --region $AWS_REGION
+    
+    aws ecr delete-repository \
+      --repository-name $ECR_REPO \
+      --region $AWS_REGION \
+      --force
+    
+    docker rmi $ECR_REPO:$IMAGE_TAG $ECR_REPO:v1.1-fixed 2>/dev/null
+
+    cd ~ && rm -rf trivy-lab/
+
+License
+
+    This project is licensed under the MIT License.
